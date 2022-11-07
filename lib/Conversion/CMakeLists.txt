@@ -23,6 +23,7 @@ if(TORCH_MLIR_ENABLE_MHLO)
 endif()
 if(TORCH_MLIR_ENABLE_TCP)
   list(APPEND linked_libs TorchMLIRTorchToTcp)
+  list(APPEND linked_libs TorchMLIRTcpToLinalg)
 endif()
 
 add_mlir_library(TorchMLIRConversionPasses
