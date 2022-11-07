@@ -47,6 +47,10 @@ class OutputType(Enum):
     # as taking the `TORCH` output type and lowering it to MHLO.
     MHLO = "mhlo"
 
+    # This output type consists of `tcp` dialect ops. It can be thought of
+    # as taking the `TORCH` output type and lowering it to TCP.
+    TCP = "tcp"
+
     # Raw output of the JIT IR importer. This is not expected to be useful
     # for end-users, but can be convenient for development or reporting bugs.
     RAW = "raw"
@@ -129,6 +133,7 @@ BACKEND_LEGAL_OPS = {
     OutputType.TOSA: ['torch.aten.flatten.using_ints','torch.aten.native_layer_norm','torch.aten.linear'],
     OutputType.LINALG_ON_TENSORS: ['torch.aten.flatten.using_ints',],
     OutputType.MHLO: [],
+    OutputType.TCP: [],
 }
 
 
@@ -317,4 +322,16 @@ PyTorch TorchScript module -> torch-mlir Object Graph IR import failed with:
             print("MHLO Backend IR")
             print(mb.module)
         return mb.module
+
+    elif output_type == OutputType.TCP:
+        run_pipeline_with_repro_report(
+            mb.module,
+            "torch-backend-to-tcp-backend-pipeline",
+            "Lowering Torch Backend IR -> TCP Backend IR")
+        if verbose:
+            print("\n====================")
+            print("TCP Backend IR")
+            print(mb.module)
+        return mb.module
+
     raise Exception(f"Unknown OutputType: {output_type}")
